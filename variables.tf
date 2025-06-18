@@ -257,3 +257,9 @@ variable "storage_shares" {
   default  = []
   nullable = false
 }
+
+variable "smb_settings" {
+  description = "Advanced SMB security configuration"
+  type        = list(string)
+  default     = []
+}
