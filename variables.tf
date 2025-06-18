@@ -258,14 +258,26 @@ variable "storage_shares" {
   nullable = false
 }
 
-variable "smb_settings" {
-  description = "Advanced SMB security configuration"
+variable "share_properties" {
+  description = "Advanced file share properties"
   type = object({
-    versions                        = optional(list(string), ["SMB2.1", "SMB3.0", "SMB3.1.1"])
-    authentication_types            = optional(list(string), ["NTLMv2", "Kerberos"])
-    kerberos_ticket_encryption_type = optional(list(string), ["RC4-HMAC", "AES-256"])
-    channel_encryption_type         = optional(list(string), ["AES-128-CCM", "AES-128-GCM", "AES-256-GCM"])
-    multichannel_enabled            = optional(bool, false)
+    cors_rule = optional(object({
+      allowed_headers    = list(string)
+      allowed_methods    = list(string)
+      allowed_origins    = list(string)
+      exposed_headers    = list(string)
+      max_age_in_seconds = number
+    }), null)
+    retention_policy = optional(object({
+      days = optional(number, 7)
+    }), null)
+    smb = optional(object({
+      versions                        = optional(list(string), ["SMB2.1", "SMB3.0", "SMB3.1.1"])
+      authentication_types            = optional(list(string), ["NTLMv2", "Kerberos"])
+      kerberos_ticket_encryption_type = optional(list(string), ["RC4-HMAC", "AES-256"])
+      channel_encryption_type         = optional(list(string), ["AES-128-CCM", "AES-128-GCM", "AES-256-GCM"])
+      multichannel_enabled            = optional(bool, false)
+    }), null)
   })
   default = null
 }

@@ -72,22 +72,45 @@ resource "azurerm_storage_account" "sa" {
     }
   }
 
-  dynamic "smb" {
-    for_each = var.smb_settings == null ? [] : [var.smb_settings]
-    content {
-      versions                        = smb.value.versions
-      authentication_types            = smb.value.authentication_types
-      kerberos_ticket_encryption_type = smb.value.kerberos_ticket_encryption_type
-      channel_encryption_type         = smb.value.channel_encryption_type
-      multichannel_enabled            = smb.value.multichannel_enabled
-    }
-  }
-
   network_rules {
     default_action             = var.default_network_rule
     ip_rules                   = values(var.access_list)
     virtual_network_subnet_ids = values(var.service_endpoints)
     bypass                     = var.traffic_bypass
+  }
+
+  dynamic "share_properties" {
+    for_each = var.share_properties == null ? [] : [var.share_properties]
+    content {
+      dynamic "cors_rule" {
+        for_each = share_properties.value.cors_rule == null ? [] : [share_properties.value.cors_rule]
+        content {
+          allowed_headers    = cors_rule.value.allowed_headers
+          allowed_methods    = cors_rule.value.allowed_methods
+          allowed_origins    = cors_rule.value.allowed_origins
+          exposed_headers    = cors_rule.value.exposed_headers
+          max_age_in_seconds = cors_rule.value.max_age_in_seconds
+        }
+      }
+
+      dynamic "retention_policy" {
+        for_each = share_properties.value.retention_policy == null ? [] : [share_properties.value.retention_policy]
+        content {
+          days = retention_policy.value.days
+        }
+      }
+
+      dynamic "smb" {
+        for_each = share_properties.value.smb == null ? [] : [share_properties.value.smb]
+        content {
+          versions                        = smb.value.versions
+          authentication_types            = smb.value.authentication_types
+          kerberos_ticket_encryption_type = smb.value.kerberos_ticket_encryption_type
+          channel_encryption_type         = smb.value.channel_encryption_type
+          multichannel_enabled            = smb.value.multichannel_enabled
+        }
+      }
+    }
   }
 }
 ## azure reference https://docs.microsoft.com/en-us/azure/storage/common/infrastructure-encryption-enable?tabs=portal
