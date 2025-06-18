@@ -72,6 +72,17 @@ resource "azurerm_storage_account" "sa" {
     }
   }
 
+  dynamic "smb" {
+    for_each = var.smb_settings == null ? [] : [var.smb_settings]
+    content {
+      versions                        = smb.value.versions
+      authentication_types            = smb.value.authentication_types
+      kerberos_ticket_encryption_type = smb.value.kerberos_ticket_encryption_type
+      channel_encryption_type         = smb.value.channel_encryption_type
+      multichannel_enabled            = smb.value.multichannel_enabled
+    }
+  }
+
   network_rules {
     default_action             = var.default_network_rule
     ip_rules                   = values(var.access_list)

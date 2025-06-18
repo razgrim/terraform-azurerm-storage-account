@@ -260,6 +260,12 @@ variable "storage_shares" {
 
 variable "smb_settings" {
   description = "Advanced SMB security configuration"
-  type        = list(string)
-  default     = []
+  type = object({
+    versions                        = optional(list(string), ["SMB2.1", "SMB3.0", "SMB3.1.1"])
+    authentication_types            = optional(list(string), ["NTLMv2", "Kerberos"])
+    kerberos_ticket_encryption_type = optional(list(string), ["RC4-HMAC", "AES-256"])
+    channel_encryption_type         = optional(list(string), ["AES-128-CCM", "AES-128-GCM", "AES-256-GCM"])
+    multichannel_enabled            = optional(bool, false)
+  })
+  default = null
 }
