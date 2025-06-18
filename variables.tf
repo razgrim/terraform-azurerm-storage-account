@@ -268,9 +268,9 @@ variable "share_properties" {
       exposed_headers    = list(string)
       max_age_in_seconds = number
     }), null)
-    retention_policy = optional(object({
+    retention_policy = object({
       days = optional(number, 7)
-    }), null)
+    })
     smb = optional(object({
       versions                        = optional(list(string), ["SMB2.1", "SMB3.0", "SMB3.1.1"])
       authentication_types            = optional(list(string), ["NTLMv2", "Kerberos"])
